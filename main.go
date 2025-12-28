@@ -40,7 +40,7 @@ type message struct {
 	SentAt      bson.DateTime `bson:"sentAt" json:"sentAt"`
 }
 
-type decodedMessage struct {
+type processedMessage struct {
 	ID          string        `bson:"_id" json:"_id"`
 	Content     string        `bson:"content" json:"content"`
 	PhoneNumber string        `bson:"phoneNumber" json:"phoneNumber"`
@@ -48,14 +48,15 @@ type decodedMessage struct {
 	SentAt      bson.DateTime `bson:"sentAt" json:"sentAt"`
 }
 
-func decodeMessage(m message) decodedMessage {
+func processMessage(m message) processedMessage {
 	decodedId, err := uuidToString(m.ID)
 	if err != nil {
 		panic(err)
 	}
-	decodedM := decodedMessage{
+
+	decodedM := processedMessage{
 		decodedId,
-		m.Content,
+		m.Content[:128], // Character limit
 		m.PhoneNumber,
 		m.CreatedAt,
 		m.SentAt,
@@ -63,7 +64,7 @@ func decodeMessage(m message) decodedMessage {
 	return decodedM
 }
 
-func fetchSentMessages() []decodedMessage {
+func fetchSentMessages() []processedMessage {
 	coll := client.Database(os.Getenv("DBNAME")).Collection("messages") // TODO move to a config
 	ctx := context.TODO()
 	filter := bson.D{{Key: "sent", Value: true}}
@@ -77,9 +78,9 @@ func fetchSentMessages() []decodedMessage {
 	if err != nil {
 		panic(err)
 	}
-	var decodedResults []decodedMessage
+	var decodedResults []processedMessage
 	for _, result := range results {
-		decodedResults = append(decodedResults, decodeMessage(result))
+		decodedResults = append(decodedResults, processMessage(result))
 	}
 	return decodedResults
 }
@@ -155,7 +156,7 @@ func doWork() {
 		if err != nil {
 			panic(err)
 		}
-		decodedResult := decodedMessage{
+		decodedResult := processedMessage{
 			decodedId,
 			result.Content,
 			result.PhoneNumber,
