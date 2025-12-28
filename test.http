@@ -1,0 +1,5 @@
+GET {{host}}/messages
+Content-Type: application/json
+
+POST {{host}}/toggle
+Content-Type: application/json

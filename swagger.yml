@@ -1,0 +1,48 @@
+openapi: 3.0.4
+info:
+  title: message-sender API
+  description: Simple API to interract with the message-sender-service
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+    description: Default local server used for development
+paths:
+  /messages:
+    get:
+      summary: Returns a list of sent messages.
+      responses:
+        "200":
+          description: A JSON array sent messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/message"
+  /toggle:
+    post:
+      summary: Starts/Stops the service
+      responses:
+        "200":
+          description: Acknowledgement message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+components:
+  schemas:
+    message:
+      properties:
+        _id:
+          type: string
+        content:
+          type: string
+        phoneNumber:
+          type: string
+        createdAt:
+          type: string
+        sentAt:
+          type: string

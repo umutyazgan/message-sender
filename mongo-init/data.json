@@ -1,0 +1,204 @@
+[{
+  "_id": {
+    "$binary": {
+      "base64": "DoKLe4SGRluQL0w422ZP5A==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 0",
+  "phoneNumber": "+905111111100",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "1970-12-28T14:40:28.069Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "J791jE5+SQO5fzqN8K4QtA==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 1",
+  "phoneNumber": "+905111111101",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "1970-12-28T14:40:28.069Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "6aWNxzFBRI60QgVZUDx+Ng==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 2",
+  "phoneNumber": "+905111111102",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "2025-12-28T14:40:43.072Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "WEdwoxyrSNe2t8nV64Cs/Q==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 3",
+  "phoneNumber": "+905111111103",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "2025-12-28T14:40:43.072Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "szgC4S2nQwybGyDWDEVChg==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 4",
+  "phoneNumber": "+905111111104",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "2025-12-28T14:53:59.837Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "Flp66q7gR9GO2CFibHgNoA==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 5",
+  "phoneNumber": "+905111111105",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "2025-12-28T14:53:59.837Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "Ti8ZawWcQeOzRxAdqjCYOw==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 6",
+  "phoneNumber": "+905111111106",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "2025-12-28T15:22:24.073Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "/6pcVYcVT22mCEnfV0G1pQ==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 7",
+  "phoneNumber": "+905111111107",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "2025-12-28T15:22:24.073Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "aqC55Dv1QgW+P/vdPu29AA==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 8",
+  "phoneNumber": "+905111111108",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "2025-12-28T15:22:39.026Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "6iwRgoyyTf62ltrxwkkCYQ==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 9",
+  "phoneNumber": "+905111111109",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "2025-12-28T15:22:39.026Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "+Dj+3qvPQxS7/55QQC3zRQ==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 10",
+  "phoneNumber": "+905111111110",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "2025-12-28T15:22:54.032Z"
+  }
+},
+{
+  "_id": {
+    "$binary": {
+      "base64": "W8NmEIowTaOGmHlmokM44g==",
+      "subType": "04"
+    }
+  },
+  "content": "Message 11",
+  "phoneNumber": "+905111111111",
+  "createdAt": {
+    "$date": "2025-12-28T12:26:58.350Z"
+  },
+  "sent": false,
+  "sentAt": {
+    "$date": "2025-12-28T15:22:54.032Z"
+  }
+}]
