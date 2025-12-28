@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -40,7 +41,7 @@ type message struct {
 	SentAt      bson.DateTime `bson:"sentAt" json:"sentAt"`
 }
 
-type decodedMessage struct {
+type processedMessage struct {
 	ID          string        `bson:"_id" json:"_id"`
 	Content     string        `bson:"content" json:"content"`
 	PhoneNumber string        `bson:"phoneNumber" json:"phoneNumber"`
@@ -48,14 +49,15 @@ type decodedMessage struct {
 	SentAt      bson.DateTime `bson:"sentAt" json:"sentAt"`
 }
 
-func decodeMessage(m message) decodedMessage {
+func processMessage(m message) processedMessage {
 	decodedId, err := uuidToString(m.ID)
 	if err != nil {
 		panic(err)
 	}
-	decodedM := decodedMessage{
+
+	decodedM := processedMessage{
 		decodedId,
-		m.Content,
+		m.Content[:128], // Character limit
 		m.PhoneNumber,
 		m.CreatedAt,
 		m.SentAt,
@@ -63,7 +65,7 @@ func decodeMessage(m message) decodedMessage {
 	return decodedM
 }
 
-func fetchSentMessages() []decodedMessage {
+func fetchSentMessages() []processedMessage {
 	coll := client.Database(os.Getenv("DBNAME")).Collection("messages") // TODO move to a config
 	ctx := context.TODO()
 	filter := bson.D{{Key: "sent", Value: true}}
@@ -77,9 +79,9 @@ func fetchSentMessages() []decodedMessage {
 	if err != nil {
 		panic(err)
 	}
-	var decodedResults []decodedMessage
+	var decodedResults []processedMessage
 	for _, result := range results {
-		decodedResults = append(decodedResults, decodeMessage(result))
+		decodedResults = append(decodedResults, processMessage(result))
 	}
 	return decodedResults
 }
@@ -97,16 +99,24 @@ func togglePause(c *gin.Context) {
 
 var paused atomic.Bool
 var client *mongo.Client
+var rdb *redis.Client
 
 func main() {
-	// mongodb setup
-	os.Getenv("MONGO_URI")
-	uri := os.Getenv("MONGO_URI") + "?directConnection=true&serverSelectionTimeoutMS=2000" // TODO move options to a config file
 	var err error
+
+	// mongodb setup
+	uri := os.Getenv("MONGO_URI") + "?directConnection=true&serverSelectionTimeoutMS=2000" // TODO move options to a config file
 	client, err = mongo.Connect(options.Client().ApplyURI(uri))
 	if err != nil {
 		panic(err)
 	}
+
+	// redis setup
+	rdb = redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_URI"),
+		Password: "",
+		DB:       0,
+	})
 
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {
@@ -155,7 +165,7 @@ func doWork() {
 		if err != nil {
 			panic(err)
 		}
-		decodedResult := decodedMessage{
+		decodedResult := processedMessage{
 			decodedId,
 			result.Content,
 			result.PhoneNumber,
@@ -168,18 +178,43 @@ func doWork() {
 			panic(err)
 		}
 		resp, err := http.Post(os.Getenv("WEBHOOK_URI"), "application/json", &buf)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusAccepted {
+			var j struct {
+				MessageID string `json:"messageId"`
+			}
+			err = json.NewDecoder(resp.Body).Decode(&j)
+			if err != nil {
+				panic(err)
+			}
+			// write to cache
+			err = rdb.Set(context.Background(), "messageId", j.MessageID, 0).Err()
+			if err != nil {
+				fmt.Println(err)
+			}
+			err = rdb.Set(context.Background(), "sentAt", time.Now().UTC().String(), 0).Err()
+			if err != nil {
+				fmt.Println(err)
+			}
+			// update sent status
+			filter = bson.D{{Key: "_id", Value: bson.D{{Key: "$in", Value: ids}}}}
+			update := bson.D{
+				{
+					Key:   "$set",
+					Value: bson.D{{Key: "sent", Value: true}},
+				}, {
+					Key:   "$currentDate",
+					Value: bson.D{{Key: "sentAt", Value: true}},
+				},
+			}
+			_, err = coll.UpdateMany(ctx, filter, update)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
 		fmt.Printf("%+v\n", resp)
 	}
-	filter = bson.D{{Key: "_id", Value: bson.D{{Key: "$in", Value: ids}}}}
-	update := bson.D{
-		{
-			Key:   "$set",
-			Value: bson.D{{Key: "sent", Value: true}},
-		}, {
-			Key:   "$currentDate",
-			Value: bson.D{{Key: "sentAt", Value: true}},
-		},
-	}
-	result, err := coll.UpdateMany(ctx, filter, update)
-	fmt.Printf("%+v\n", result)
 }
