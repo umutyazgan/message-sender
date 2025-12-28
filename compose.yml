@@ -8,7 +8,8 @@ services:
     environment:
       MONGO_URI: "mongodb://mongodb:27017/"
       DBNAME: insiderone
-      WEBHOOK_URI: "<redacted>"
+      WEBHOOK_URI: "https://webhook.site/f0b85fd8-1cd8-40c8-b073-2e7fe2daf07d/"
+      REDIS_URI: redis:6379
     restart: unless-stopped
   mongo:
     image: "mongo:latest"
@@ -19,7 +20,16 @@ services:
       - mongo_data:/data/db
       - ./mongo-init:/docker-entrypoint-initdb.d:ro
     restart: unless-stopped
-
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    volumes: 
+      - cache:/data/cache
 
 volumes:
   mongo_data:
+  cache:
